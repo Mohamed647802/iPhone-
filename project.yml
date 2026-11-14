@@ -14,11 +14,11 @@ targets:
         CFBundleDisplayName: عداد الاستهلاك
         UILaunchScreen: {}
         UIBackgroundModes: [fetch]
-        BGTaskSchedulerPermittedIdentifiers: [com.example.datameter.refresh]
+        BGTaskSchedulerPermittedIdentifiers: [com.mohamed.datameter.refresh]
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.example.datameter
+        PRODUCT_BUNDLE_IDENTIFIER: com.mohamed.datameter
         MARKETING_VERSION: "1.0"
         CURRENT_PROJECT_VERSION: "1"
         SWIFT_VERSION: "5.9"
