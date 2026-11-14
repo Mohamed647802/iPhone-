@@ -13,8 +13,10 @@ targets:
       properties:
         CFBundleDisplayName: عداد الاستهلاك
         UILaunchScreen: {}
-        UIBackgroundModes: [fetch]
+        UIBackgroundModes: [fetch, location]
         BGTaskSchedulerPermittedIdentifiers: [com.example.datameter.refresh]
+        NSLocationWhenInUseUsageDescription: "يستخدم التطبيق الموقع فقط لإبقاء العداد شغالا في الخلفية وإرسال التنبيهات في وقتها، ولا يتم حفظ موقعك أو إرساله."
+        NSLocationAlwaysAndWhenInUseUsageDescription: "يستخدم التطبيق الموقع فقط لإبقاء العداد شغالا في الخلفية وإرسال التنبيهات في وقتها، ولا يتم حفظ موقعك أو إرساله."
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
     settings:
       base:
