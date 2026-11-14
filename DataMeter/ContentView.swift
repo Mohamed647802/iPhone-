@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct ContentView: View {
     @Bindable var engine: UsageEngine
@@ -16,6 +17,7 @@ struct ContentView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
+                    if engine.notificationsDenied { notificationWarning }
                     summaryCard
 
                     HStack(spacing: 12) {
@@ -96,6 +98,22 @@ struct ContentView: View {
         .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 20))
     }
 
+    private var notificationWarning: some View {
+        VStack(spacing: 8) {
+            Label("التنبيهات مقفولة للتطبيق", systemImage: "bell.slash.fill")
+                .font(.subheadline.bold())
+                .foregroundStyle(.red)
+            Button("افتح الإعدادات لتفعيلها") {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            }
+        }
+        .padding()
+        .frame(maxWidth: .infinity)
+        .background(Color.red.opacity(0.12), in: RoundedRectangle(cornerRadius: 16))
+    }
+
     private func tile(title: String, icon: String, bytes: Double, tint: Color) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Label(title, systemImage: icon)
@@ -145,7 +163,7 @@ struct ContentView: View {
             } else {
                 Text("العداد متوقف").font(.footnote).foregroundStyle(.secondary)
             }
-            Text("الاستهلاك المحسوب هو كل ما يمر عبر الشبكة منذ الضغط على «تشغيل».")
+            Text("اسمح بالموقع (أثناء الاستخدام) والإشعارات عشان التنبيه يوصل وانت خارج التطبيق.")
                 .font(.caption2).foregroundStyle(.tertiary)
                 .multilineTextAlignment(.center)
         }
@@ -198,6 +216,12 @@ struct SettingsView: View {
                     Text("تنبيه النسبة")
                 } footer: {
                     Text("هيجيلك تنبيه إضافي تلقائي عند استهلاك الكمية كاملة (100%).")
+                }
+
+                Section("تجربة") {
+                    Button("جرّب التنبيه بعد 5 ثواني (اخرج من التطبيق)") {
+                        engine.sendTest()
+                    }
                 }
             }
             .navigationTitle("الإعدادات")
