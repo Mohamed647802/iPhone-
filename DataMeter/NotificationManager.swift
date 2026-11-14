@@ -13,22 +13,26 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
             .requestAuthorization(options: [.alert, .sound, .badge])
     }
 
-    func send(title: String, body: String, id: String) {
+    func authorizationStatus() async -> UNAuthorizationStatus {
+        await UNUserNotificationCenter.current().notificationSettings().authorizationStatus
+    }
+
+    func send(title: String, body: String, id: String, delay: TimeInterval = 1) {
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
         content.sound = .default
         let request = UNNotificationRequest(
-            identifier: id,
+            identifier: id + "-" + UUID().uuidString,
             content: content,
-            trigger: UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+            trigger: UNTimeIntervalNotificationTrigger(timeInterval: max(1, delay), repeats: false)
         )
         UNUserNotificationCenter.current().add(request)
     }
 
-    // داخل التطبيق نعرض تنبيه داخلي، فهنا صوت فقط بدون بانر مكرر.
+    // يظهر البانر والصوت حتى لو التطبيق مفتوح.
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
-        [.sound]
+        [.banner, .sound, .list]
     }
 }
