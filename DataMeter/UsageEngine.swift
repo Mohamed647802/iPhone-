@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 import UIKit
+import UserNotifications
 import BackgroundTasks
 
 struct AlertMessage: Identifiable {
@@ -46,7 +47,7 @@ final class UsageEngine {
 
         var quotaValue: Double = 1
         var quotaUnit: DataUnit = .gb
-        var source: Source = .cellular
+        var source: Source = .total
         var thresholdPercent: Double = 80
 
         var warnedThreshold = false
@@ -55,6 +56,7 @@ final class UsageEngine {
 
     var state: Stored
     var pendingAlert: AlertMessage?
+    var notificationsDenied = false
 
     @ObservationIgnored private var loopTask: Task<Void, Never>?
 
@@ -93,7 +95,8 @@ final class UsageEngine {
         save()
         startLoop()
         scheduleBackgroundRefresh()
-        Task { await NotificationManager.shared.requestAuthorization() }
+        BackgroundKeeper.shared.start()
+        refreshNotificationStatus()
     }
 
     func stop() {
@@ -102,6 +105,7 @@ final class UsageEngine {
         save()
         loopTask?.cancel()
         loopTask = nil
+        BackgroundKeeper.shared.stop()
     }
 
     func reset() {
@@ -122,6 +126,26 @@ final class UsageEngine {
         state.warnedThreshold = false
         state.warnedFull = false
         if state.isRunning { tick() } else { save() }
+    }
+
+    func sendTest() {
+        NotificationManager.shared.send(
+            title: "تجربة التنبيه ✅",
+            body: "التنبيهات شغالة تمام.",
+            id: "test",
+            delay: 5
+        )
+    }
+
+    func refreshNotificationStatus() {
+        Task {
+            var status = await NotificationManager.shared.authorizationStatus()
+            if status == .notDetermined {
+                await NotificationManager.shared.requestAuthorization()
+                status = await NotificationManager.shared.authorizationStatus()
+            }
+            notificationsDenied = (status == .denied)
+        }
     }
 
     // MARK: - Counting
@@ -185,9 +209,11 @@ final class UsageEngine {
     }
 
     func didBecomeActive() {
+        refreshNotificationStatus()
         guard state.isRunning else { return }
         tick()          // يلحق أي استهلاك حصل والتطبيق في الخلفية
         startLoop()
+        BackgroundKeeper.shared.start()
     }
 
     func didEnterBackground() {
