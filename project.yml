@@ -1,0 +1,25 @@
+name: DataMeter
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    iOS: "17.0"
+targets:
+  DataMeter:
+    type: application
+    platform: iOS
+    sources: [DataMeter]
+    info:
+      path: Info.plist
+      properties:
+        CFBundleDisplayName: عداد الاستهلاك
+        UILaunchScreen: {}
+        UIBackgroundModes: [fetch]
+        BGTaskSchedulerPermittedIdentifiers: [com.example.datameter.refresh]
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.datameter
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        SWIFT_VERSION: "5.9"
+        TARGETED_DEVICE_FAMILY: "1"
